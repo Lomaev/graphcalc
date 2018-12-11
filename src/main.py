@@ -158,18 +158,39 @@ class MyWidget(QMainWindow):
 
     def calculate_f(self):
         try:
+            resolution = 5000
             start = int(self.start.text())
             end = int(self.end.text())
-            results = [calculate(self.expression.text(), start + (end - start) / 100 * i) for i in range(101)]
-            print(results)
+            graphics = [[]]  # There can be many graphics. For example, y = 1/x.
+            x_positions = [[]]
+            for i in range(resolution + 1):
+                try:
+                    graphics[-1].append(calculate(self.expression.text(), start + (end - start) / resolution * i))
+                    x_positions[-1].append(start + (end - start) / resolution * i)
+                    print(abs(graphics[-1][-1] - graphics[-1][-2]) if len(graphics[-1]) > 1 else 'No.',
+                          1.5 * abs(graphics[-1][-1]), 1.5 * abs(graphics[-1][-2]) if len(graphics[-1]) > 1 else 'No.')
+                    if len(graphics[-1]) > 1 and (
+                            abs(graphics[-1][-1] - graphics[-1][-2]) > (1.5 * abs(graphics[-1][-1])) or
+                            abs(graphics[-1][-1] - graphics[-1][-2]) > (1.5 * abs(graphics[-1][-2]))):
+                        raise ValueError
+                except Exception:
+                    x_positions.append([x_positions[-1][-1]])
+                    graphics.append([graphics[-1][-1]])
+                    del graphics[-2][-1]
+                    del x_positions[-2][-1]
+            # results = [calculate(self.expression.text(),
+            #                    start + (end - start) / resolution * i) for i in range(resolution + 1)]
+            print(graphics)
+            print(x_positions)
             self.graphic.clear()
-            self.graphic.plot([start + (end - start) / 100 * i for i in range(101)],
-                              results)
+            for x, y in zip(x_positions, graphics):
+                self.graphic.plot(x, y)
         except Exception:
             print('Draw error.')
 
     def run(self):
         pass
+
 
 app = QApplication(sys.argv)
 ex = MyWidget()
