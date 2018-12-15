@@ -201,7 +201,9 @@ class MyWidget(QMainWindow):
         pass
 
 
-app = QApplication(sys.argv)
-ex = MyWidget()
-ex.show()
-sys.exit(app.exec_())
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = MyWidget()
+    ex.show()
+    input()
+    sys.exit(app.exec_())
