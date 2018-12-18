@@ -163,6 +163,8 @@ class MyWidget(QMainWindow):
             end = int(self.end.text())
             top = 0
             bottom = 0
+            top_lim = 100
+            bot_lim = -100
             graphics = [[]]  # There can be many graphics. For example, y = 1/x.
             x_positions = [[]]
             for i in range(resolution + 1):
@@ -174,24 +176,29 @@ class MyWidget(QMainWindow):
                     if graphics[-1][-1] < bottom:
                         bottom = graphics[-1][-1]
 
+                    if graphics[-1][-1] > top_lim or graphics[-1][-1] < bot_lim:
+                        del graphics[-1][-1]
+                        del x_positions[-1][-1]
+
                     # print(abs(graphics[-1][-1] - graphics[-1][-2]) if len(graphics[-1]) > 1 else 'No.',
                     #      1.5 * abs(graphics[-1][-1]), 1.5 * abs(graphics[-1][-2]) if len(graphics[-1]) > 1 else 'No.')
-                    if len(graphics[-1]) > 1 and (
-                            abs(graphics[-1][-1] - graphics[-1][-2]) > (1.5 * abs(graphics[-1][-1])) or
-                            abs(graphics[-1][-1] - graphics[-1][-2]) > (1.5 * abs(graphics[-1][-2]))):
+                    if len(graphics[-1]) > 1 and graphics[-1][-1] * graphics[-1][-2] < 0 and abs(
+                            graphics[-1][-1] - graphics[-1][-2]) > (
+                            1.5 * min(abs(graphics[-1][-2]), abs(graphics[-1][-1]))):
                         raise ValueError
                 except Exception:
-                    x_positions.append([x_positions[-1][-1]])
-                    graphics.append([graphics[-1][-1]])
-                    del graphics[-2][-1]
-                    del x_positions[-2][-1]
+                    if len(graphics[-1]) > 0:
+                        x_positions.append([x_positions[-1][-1]])
+                        graphics.append([graphics[-1][-1]])
+                        del graphics[-2][-1]
+                        del x_positions[-2][-1]
             # results = [calculate(self.expression.text(),
             #                    start + (end - start) / resolution * i) for i in range(resolution + 1)]
             print(graphics)
             print(x_positions)
             self.graphic.clear()
-            self.graphic.plot([start - abs(start) * 0.05, end + abs(end) * 0.05], [0, 0], pen='r')
-            self.graphic.plot([0, 0], [bottom - 10, top + 10], pen='r')
+            # self.graphic.plot([start - abs(start) * 0.05, end + abs(end) * 0.05], [0, 0], pen='r')
+            # self.graphic.plot([0, 0], [bottom - 10, top + 10], pen='r')
             for x, y in zip(x_positions, graphics):
                 self.graphic.plot(x, y)
         except Exception:
@@ -201,9 +208,7 @@ class MyWidget(QMainWindow):
         pass
 
 
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    ex = MyWidget()
-    ex.show()
-    input()
-    sys.exit(app.exec_())
+app = QApplication(sys.argv)
+ex = MyWidget()
+ex.show()
+sys.exit(app.exec_())
