@@ -171,14 +171,18 @@ class MyWidget(QMainWindow):
                 try:
                     graphics[-1].append(calculate(self.expression.text(), start + (end - start) / resolution * i))
                     x_positions[-1].append(start + (end - start) / resolution * i)
+
+                    if graphics[-1][-1] > top_lim or graphics[-1][-1] < bot_lim:
+                        del graphics[-1][-1]
+                        del x_positions[-1][-1]
+                        continue
+
                     if graphics[-1][-1] > top:
                         top = graphics[-1][-1]
                     if graphics[-1][-1] < bottom:
                         bottom = graphics[-1][-1]
 
-                    if graphics[-1][-1] > top_lim or graphics[-1][-1] < bot_lim:
-                        del graphics[-1][-1]
-                        del x_positions[-1][-1]
+
 
                     # print(abs(graphics[-1][-1] - graphics[-1][-2]) if len(graphics[-1]) > 1 else 'No.',
                     #      1.5 * abs(graphics[-1][-1]), 1.5 * abs(graphics[-1][-2]) if len(graphics[-1]) > 1 else 'No.')
@@ -197,10 +201,10 @@ class MyWidget(QMainWindow):
             print(graphics)
             print(x_positions)
             self.graphic.clear()
-            # self.graphic.plot([start - abs(start) * 0.05, end + abs(end) * 0.05], [0, 0], pen='r')
-            # self.graphic.plot([0, 0], [bottom - 10, top + 10], pen='r')
             for x, y in zip(x_positions, graphics):
                 self.graphic.plot(x, y)
+            self.graphic.plot([start - abs(start) * 0.05, end + abs(end) * 0.05], [0, 0], pen='r')
+            self.graphic.plot([0, 0], [bottom - 10, top + 10], pen='r')
         except Exception:
             print('Draw error.')
 
