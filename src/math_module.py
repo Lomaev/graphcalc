@@ -49,14 +49,3 @@ def calculate(expression, var):
 
 if __name__ == '__main__':  # For unit-testing.
     print(calculate(input()))
-
-# Maybe later.
-'''def calculate(expression):
-    try:
-        num = int(expression)
-        return num
-    except ValueError:
-        if '(' in expression and ')' in expression:
-            while expression[0] == '(' and expression[-1] == ')':
-                expression = expression[1:-1]
-            print(expression)'''
